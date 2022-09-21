@@ -1,0 +1,12 @@
+*{
+    margin: 0;
+}
+
+@font-face{
+    font-family: get_schwifty;
+    src: url('../../assets/img/get_schwifty.ttf');
+}
+
+html{
+    min-height: 100vh;
+}
