@@ -1,0 +1,9 @@
+.cont-episodio{
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #1c1d39;
+  color: #fff;
+  width: 300px;
+  margin-bottom: 16px;
+  padding: 4px;
+  border-radius: 4px;
+}
