@@ -1,5 +1,16 @@
 let acc = ''
 
+function inicio() {
+	resultados.innerHTML = "";
+	resulPaginas.innerHTML = "";
+	resultadosLoc.innerHTML = "";
+	resultadosEpi.innerHTML = "";
+
+	anterior.disabled = true
+	siguiente.disabled = true
+
+}
+
 function mostrarPersonaje(personaje) {
 	acc += `
     <div class='cont-personaje'>
@@ -43,13 +54,19 @@ function mostrarEpisodio(episodio) {
 let personaje = document.querySelector('.personajes')
 let localidades = document.querySelector('.localidades')
 let episodios = document.querySelector('.episodios')
-
 let arrPersonajes = [];
 let arrLocalidades = [];
 let arrEpisodios = [];
 let resultados = document.getElementById('resultados');
 let resultadosLoc = document.getElementById('resultadosLoc');
 let resultadosEpi = document.getElementById('resultadosEpi');
+let resulPaginas = document.getElementById('resultadosPaginas');
+
+let currentNext = ''
+let currentPrev = ''
+
+let siguiente = document.getElementById('siguiente')
+let anterior = document.getElementById('anterior')
 
 console.log("acc", acc)
 
@@ -58,19 +75,31 @@ personaje.addEventListener('click', (e) => {
 	fetch(`https://rickandmortyapi.com/api/character`)
 		.then(res => res.json())
 		.then(data => {
+			console.log(data)
 			arrPersonajes = [...data.results];
-
+			currentNext = data.info.next
 			resultadosLoc.classList.add("deshabilitar");
 			resultadosEpi.classList.add("deshabilitar");
 			resultados.classList.remove("deshabilitar");
-			resultados.innerHTML = "";
+			resulPaginas.classList.add("deshabilitar")
 
+			resultados.innerHTML = "";
 			arrPersonajes.map((personaje) => {
 				mostrarPersonaje(personaje)
 			})
 
 			resultados.innerHTML = acc;
 			acc = "";
+			if (data.info.prev == null) {
+				anterior.disabled = true
+			} else {
+				anterior.disabled = false
+			}
+			if (data.info.next == null) {
+				siguiente.disabled = true
+			} else {
+				siguiente.disabled = false
+			}
 		})
 		.catch(err => { console.log(err) })
 })
@@ -80,10 +109,14 @@ localidades.addEventListener('click', (e) => {
 		.then(res => res.json())
 		.then(data => {
 			arrLocalidades = [...data.results];
-
+			console.log('localidades', data)
+			currentNext = data.info.next
+			console.log(currentNext)
 			resultados.classList.add("deshabilitar")
 			resultadosEpi.classList.add("deshabilitar");
 			resultadosLoc.classList.remove("deshabilitar");
+			resulPaginas.classList.add("deshabilitar")
+
 			resultadosLoc.innerHTML = "";
 
 			arrLocalidades.map((localidad) => {
@@ -92,6 +125,16 @@ localidades.addEventListener('click', (e) => {
 
 			resultadosLoc.innerHTML = acc;
 			acc = "";
+			if (data.info.prev == null) {
+				anterior.disabled = true
+			} else {
+				anterior.disabled = false
+			}
+			if (data.info.next == null) {
+				siguiente.disabled = true
+			} else {
+				siguiente.disabled = false
+			}
 		})
 		.catch(err => { console.log(err) })
 })
@@ -101,10 +144,13 @@ episodios.addEventListener('click', (e) => {
 		.then(res => res.json())
 		.then(data => {
 			arrEpisodios = [...data.results];
+			// console.log("episodio", data)
+			currentNext = data.info.next
 
 			resultados.classList.add("deshabilitar")
 			resultadosLoc.classList.add("deshabilitar")
 			resultadosEpi.classList.remove("deshabilitar");
+			resulPaginas.classList.add("deshabilitar")
 
 			resultadosEpi.innerHTML = "";
 
@@ -114,6 +160,119 @@ episodios.addEventListener('click', (e) => {
 
 			resultadosEpi.innerHTML = acc;
 			acc = ""
+			if (data.info.prev == null) {
+				anterior.disabled = true
+			} else {
+				anterior.disabled = false
+			}
+			if (data.info.next == null) {
+				siguiente.disabled = true
+			} else {
+				siguiente.disabled = false
+			}
+		})
+		.catch(err => { console.log(err) })
+})
+//__________________________________________________________________
+siguiente.addEventListener('click', () => {
+	fetch(currentNext)
+		.then(res => res.json())
+		.then(data => {
+			if (currentNext.includes('character')) {
+				arrPersonajes = [...data.results];
+				arrPersonajes.map((personaje) => {
+					mostrarPersonaje(personaje)
+				})
+			}
+			if (currentNext.includes('location')) {
+				arrLocalidades = [...data.results];
+				arrLocalidades.map((localidad) => {
+					mostrarLocalidad(localidad)
+				})
+			}
+			if (currentNext.includes('episode')) {
+				arrEpisodios = [...data.results];
+				arrEpisodios.map((episodio) => {
+					mostrarEpisodio(episodio)
+				})
+			}
+
+			currentNext = data.info.next
+			console.log('next', currentNext)
+			currentPrev = data.info.prev
+			console.log('prev', currentPrev)
+
+			resultados.classList.add("deshabilitar")
+			resultadosLoc.classList.add("deshabilitar")
+			resultadosEpi.classList.add("deshabilitar");
+			resulPaginas.classList.remove("deshabilitar")
+
+			resulPaginas.innerHTML = ""
+
+			resulPaginas.innerHTML = acc;
+			acc = ""
+
+			if (data.info.next == null) {
+				siguiente.disabled = true
+			} else {
+				anterior.disabled = false
+			}
+			if (data.info.next == null) {
+				siguiente.disabled = true
+			} else {
+				siguiente.disabled = false
+			}
+		})
+		.catch(err => { console.log(err) })
+})
+
+anterior.addEventListener('click', (e) => {
+	fetch(currentPrev)
+		.then(res => res.json())
+		.then(data => {
+			if (currentNext.includes('character')) {
+				arrPersonajes = [...data.results];
+				arrPersonajes.map((personaje) => {
+					mostrarPersonaje(personaje)
+				})
+			}
+			if (currentNext.includes('location')) {
+				arrLocalidades = [...data.results];
+				arrLocalidades.map((localidad) => {
+					mostrarLocalidad(localidad)
+				})
+			}
+			if (currentNext.includes('episode')) {
+				arrEpisodios = [...data.results];
+				arrEpisodios.map((episodio) => {
+					mostrarEpisodio(episodio)
+				})
+			}
+
+			currentNext = data.info.next
+			currentPrev = data.info.prev
+
+			resultados.classList.add("deshabilitar")
+			resultadosLoc.classList.add("deshabilitar")
+			resultadosEpi.classList.add("deshabilitar");
+			resulPaginas.classList.remove("deshabilitar")
+
+			resulPaginas.innerHTML = ""
+
+			resulPaginas.innerHTML = acc;
+			acc = ""
+
+			currentPrev = data.info.prev
+			if (data.info.prev == null) {
+				anterior.disabled = true
+			} else {
+				anterior.disabled = false
+			}
+			if (data.info.next == null) {
+				siguiente.disabled = true
+			} else {
+				siguiente.disabled = false
+			}
 		})
 		.catch(err => { console.log(err) })
 })
